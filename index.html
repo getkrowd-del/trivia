@@ -1,0 +1,738 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- BASE:START (managed by Coding Agent — do not edit) -->
+<base href="/trivia/">
+<!-- BASE:END -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<!-- Tailwind CSS Play CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Display + UI fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+  
+    <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+    
+    
+    <meta property="og:url" content="https://app.macknified.com/p/6Nzq3WiC/macknified-ai-platform-trivia" />
+    
+    
+  
+  
+  
+  
+<script>
+(function(){
+  var slug='6Nzq3WiC';
+  var successSubtext='';var successBtnLabel='Continue';var successBtnColor='#16a34a';var successRedirect='';
+  function findEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  function findPhone(){var ids=['phone','phoneNumber','phone-number','tel','telephone','mobile','mobileNumber','cell','contact-phone','buyer-phone'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.trim())return el.value.trim();}var inputs=document.querySelectorAll('input[type="tel"],input[name*="phone"],input[name*="tel"],input[name*="mobile"],input[placeholder*="phone"],input[placeholder*="Phone"]');for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.trim())return inputs[j].value.trim();}return '';}
+  var __realPay=function(a,b,c,d,e){
+    var amountCents,email,productName,productDescription,customerName,quantity;
+    if(a&&typeof a==='object'){
+      amountCents=a.amountCents;email=a.email;productName=a.productName;
+      productDescription=a.productDescription||'';customerName=a.name||'';quantity=a.quantity||1;
+    }else{
+      amountCents=typeof a==='number'?a:0;productName=typeof b==='string'?b:'';
+      productDescription=typeof c==='string'?c:'';email='';customerName='';quantity=1;
+    }
+    if(!email)email=findEmail();
+    if(!customerName)customerName=findName();
+    var phone=findPhone();
+    if(!productName){alert('Product name is required.');return Promise.reject('no_product_name');}
+    if(!amountCents||amountCents<100){alert('Amount must be at least $1.00');return Promise.reject('invalid_amount');}
+    if(!email){alert('Please enter your email address.');return Promise.reject('no_email');}
+    var successBase=window.location.href.split('?')[0];
+    return fetch('/api/landing-pages/public/'+slug+'/payment/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,name:customerName,phone:phone||'',amountCents:amountCents,productName:productName,productDescription:productDescription,quantity:quantity,successUrl:successBase+'?payment=success&product='+encodeURIComponent(productName)+'&session_id={CHECKOUT_SESSION_ID}',cancelUrl:successBase+'?payment=cancelled'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process payment');throw new Error(d.error);}
+    });
+  };
+  try{Object.defineProperty(window,'__processPayment',{value:__realPay,writable:false,configurable:false});}catch(e){window.__processPayment=__realPay;}
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('payment')==='success'){
+      var pName=urlParams.get('product')||'your item';
+      var sid=urlParams.get('session_id');
+      if(sid){try{fetch('/api/landing-pages/public/'+slug+'/checkout/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid})}).catch(function(){});}catch(e){}}
+      var overlay=document.createElement('div');overlay.id='payment-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+      var subTxt=successSubtext||('Thank you for purchasing '+pName+'.');
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"3\"><polyline points=\"20 6 9 17 4 12\"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Payment Successful!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">'+esc(subTxt)+'</p><button id="lp-pay-success-btn" style="padding:12px 32px;font-size:16px;font-weight:600;background:'+successBtnColor+';color:white;border:none;border-radius:8px;cursor:pointer;">'+esc(successBtnLabel)+'</button></div>';
+      document.body.appendChild(overlay);
+      var pBtn=document.getElementById('lp-pay-success-btn');
+      if(pBtn){pBtn.addEventListener('click',function(){if(successRedirect){window.location.href=successRedirect;}else{overlay.remove();window.history.replaceState({},'',window.location.pathname);}});}
+    }
+  });
+})();
+</script>
+<script>
+(function(){
+  var slug='6Nzq3WiC';
+  var successSubtext='';var successBtnLabel='Continue';var successBtnColor='#16a34a';var successRedirect='';
+  function findCartEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findCartName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  function findCartPhone(){var ids=['phone','phoneNumber','phone-number','tel','telephone','mobile','mobileNumber','cell','contact-phone','buyer-phone'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.trim())return el.value.trim();}var inputs=document.querySelectorAll('input[type="tel"],input[name*="phone"],input[name*="tel"],input[name*="mobile"],input[placeholder*="phone"],input[placeholder*="Phone"]');for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.trim())return inputs[j].value.trim();}return '';}
+  var __realCart=function(arg){
+    var items,email='',customerName='',successUrl,cancelUrl;
+    if(Array.isArray(arg)){items=arg;}
+    else if(arg&&typeof arg==='object'){items=arg.items;email=arg.email||'';customerName=arg.name||arg.customerName||'';successUrl=arg.successUrl;cancelUrl=arg.cancelUrl;}
+    if(!Array.isArray(items)||items.length===0){alert('No items in cart.');return Promise.reject('no_items');}
+    var cleanItems=[];var totalCents=0;
+    for(var i=0;i<items.length;i++){
+      var it=items[i];if(!it||typeof it!=='object'){alert('Invalid item at position '+i);return Promise.reject('bad_item');}
+      var nm=typeof it.name==='string'?it.name.trim():'';
+      if(!nm){alert('Item '+(i+1)+' is missing a name.');return Promise.reject('no_name');}
+      var amt=typeof it.amountCents==='number'?it.amountCents:(typeof it.amount==='number'?Math.round(it.amount*100):NaN);
+      if(!isFinite(amt)||amt<1){alert('Item "'+nm+'" needs a valid amount in cents.');return Promise.reject('bad_amount');}
+      var qty=(typeof it.quantity==='number'&&it.quantity>0)?Math.floor(it.quantity):1;
+      cleanItems.push({name:nm,description:it.description||'',amountCents:amt,quantity:qty});
+      totalCents+=amt*qty;
+    }
+    if(totalCents<50){alert('Cart total must be at least $0.50');return Promise.reject('total_too_low');}
+    if(!email)email=findCartEmail();
+    if(!customerName)customerName=findCartName();
+    var cartPhone=findCartPhone();
+    if(!email){var p=window.prompt('Enter your email for the receipt:','');if(p&&p.indexOf('@')>-1){email=p.trim();}else{alert('An email address is required to complete checkout.');return Promise.reject('no_email');}}
+    var successBase=window.location.href.split('?')[0];
+    var body={email:email,name:customerName,items:cleanItems};
+    if(cartPhone)body.phone=cartPhone;
+    body.successUrl=successUrl||(successBase+'?cart=success&email='+encodeURIComponent(email)+'&session_id={CHECKOUT_SESSION_ID}');
+    body.cancelUrl=cancelUrl||(successBase+'?cart=cancelled');
+    return fetch('/api/landing-pages/public/'+slug+'/cart/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process checkout');throw new Error(d.error);}
+    });
+  };
+  try{Object.defineProperty(window,'__processCart',{value:__realCart,writable:false,configurable:false});}catch(e){window.__processCart=__realCart;}
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('cart')==='success'){
+      var sid=urlParams.get('session_id');
+      if(sid){try{fetch('/api/landing-pages/public/'+slug+'/checkout/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sid})}).catch(function(){});}catch(e){}}
+      if(document.getElementById('payment-success-overlay')||document.getElementById('donation-success-overlay')||document.getElementById('cart-success-overlay'))return;
+      var overlay=document.createElement('div');overlay.id='cart-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+      var subTxt=successSubtext||'Thank you for your order.';
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"3\"><polyline points=\"20 6 9 17 4 12\"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Order Confirmed!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">'+esc(subTxt)+'</p><button id="lp-cart-success-btn" style="padding:12px 32px;font-size:16px;font-weight:600;background:'+successBtnColor+';color:white;border:none;border-radius:8px;cursor:pointer;">'+esc(successBtnLabel)+'</button></div>';
+      document.body.appendChild(overlay);
+      var cBtn=document.getElementById('lp-cart-success-btn');
+      if(cBtn){cBtn.addEventListener('click',function(){if(successRedirect){window.location.href=successRedirect;}else{overlay.remove();window.history.replaceState({},'',window.location.pathname);}});}
+    }
+  });
+})();
+</script><script data-lp-token-hydrate>
+(function(){try{
+  var slug="macknified-ai-platform-trivia";
+  var SK='lp_access_'+slug;
+  var map={access_token:'lp_pw_',allowlist_access_token:'lp_al_',pin_access_token:'lp_pin_',paywall_access_token:'lp_paid_'};
+  var u=new URL(location.href);var found=null;var changed=false;
+  Object.keys(map).forEach(function(p){var v=u.searchParams.get(p);if(v){found=v;try{localStorage.setItem(map[p]+slug,v);}catch(e){}u.searchParams.delete(p);changed=true;}});
+  if(found){try{sessionStorage.setItem(SK,found);}catch(e){}}
+  else{try{if(!sessionStorage.getItem(SK)){var t=localStorage.getItem('lp_pw_'+slug)||localStorage.getItem('lp_al_'+slug)||localStorage.getItem('lp_pin_'+slug)||localStorage.getItem('lp_paid_'+slug);if(t)sessionStorage.setItem(SK,t);}}catch(e){}}
+  if(changed){try{history.replaceState(null,'',u.toString());}catch(e){}}
+  function getTok(){try{return sessionStorage.getItem(SK)||localStorage.getItem('lp_pw_'+slug)||localStorage.getItem('lp_al_'+slug)||localStorage.getItem('lp_pin_'+slug)||localStorage.getItem('lp_paid_'+slug);}catch(e){return null;}}
+  function needsToken(url,method){if(!url)return false;var s=String(url);var m=(method||'GET').toUpperCase();var isSheetWrite=(m==='POST'||m==='PATCH'||m==='PUT'||m==='DELETE')&&/\/sheet-rows(\/|$|\?)/.test(s);var isSheetRead=/\/sheet-data(\/|$|\?)/.test(s);var isLlm=/\/api\/landing-pages\/public\/[^/]+\/(llm|llm-config)(\/|$|\?)/.test(s);return isSheetWrite||isSheetRead||isLlm;}
+  if(window.fetch){var _f=window.fetch;window.fetch=function(input,init){try{var url=typeof input==='string'?input:(input&&input.url)||'';var method=(init&&init.method)||(input&&input.method)||'GET';if(needsToken(url,method)){var tok=getTok();if(tok){init=init||{};var h=new Headers(init.headers||(typeof input!=='string'?input.headers:undefined)||{});if(!h.has('X-Landing-Page-Token'))h.set('X-Landing-Page-Token',tok);init.headers=h;}}}catch(e){}return _f.call(this,input,init);};}
+  if(window.XMLHttpRequest){var _o=XMLHttpRequest.prototype.open;var _s=XMLHttpRequest.prototype.send;XMLHttpRequest.prototype.open=function(m,u){this.__lpM=m;this.__lpU=u;return _o.apply(this,arguments);};XMLHttpRequest.prototype.send=function(){try{if(needsToken(this.__lpU,this.__lpM)){var tok=getTok();if(tok)this.setRequestHeader('X-Landing-Page-Token',tok);}}catch(e){}return _s.apply(this,arguments);};}
+}catch(e){}})();
+</script>
+
+<!-- SEO Meta Tags -->
+<title>Trivia</title>
+<meta property="og:title" content="Trivia" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Trivia" />
+<!-- End SEO Meta Tags -->
+<script data-lp-token-hydrate>
+(function(){try{
+  var slug="lp-mrwdt9fp-3fa2x";
+  var SK='lp_access_'+slug;
+  var map={access_token:'lp_pw_',allowlist_access_token:'lp_al_',pin_access_token:'lp_pin_',paywall_access_token:'lp_paid_'};
+  var u=new URL(location.href);var found=null;var changed=false;
+  Object.keys(map).forEach(function(p){var v=u.searchParams.get(p);if(v){found=v;try{localStorage.setItem(map[p]+slug,v);}catch(e){}u.searchParams.delete(p);changed=true;}});
+  if(found){try{sessionStorage.setItem(SK,found);}catch(e){}}
+  else{try{if(!sessionStorage.getItem(SK)){var t=localStorage.getItem('lp_pw_'+slug)||localStorage.getItem('lp_al_'+slug)||localStorage.getItem('lp_pin_'+slug)||localStorage.getItem('lp_paid_'+slug);if(t)sessionStorage.setItem(SK,t);}}catch(e){}}
+  if(changed){try{history.replaceState(null,'',u.toString());}catch(e){}}
+  function getTok(){try{return sessionStorage.getItem(SK)||localStorage.getItem('lp_pw_'+slug)||localStorage.getItem('lp_al_'+slug)||localStorage.getItem('lp_pin_'+slug)||localStorage.getItem('lp_paid_'+slug);}catch(e){return null;}}
+  function needsToken(url,method){if(!url)return false;var s=String(url);var m=(method||'GET').toUpperCase();var isSheetWrite=(m==='POST'||m==='PATCH'||m==='PUT'||m==='DELETE')&&/\/sheet-rows(\/|$|\?)/.test(s);var isSheetRead=/\/sheet-data(\/|$|\?)/.test(s);var isLlm=/\/api\/landing-pages\/public\/[^/]+\/(llm|llm-config)(\/|$|\?)/.test(s);return isSheetWrite||isSheetRead||isLlm;}
+  if(window.fetch){var _f=window.fetch;window.fetch=function(input,init){try{var url=typeof input==='string'?input:(input&&input.url)||'';var method=(init&&init.method)||(input&&input.method)||'GET';if(needsToken(url,method)){var tok=getTok();if(tok){init=init||{};var h=new Headers(init.headers||(typeof input!=='string'?input.headers:undefined)||{});if(!h.has('X-Landing-Page-Token'))h.set('X-Landing-Page-Token',tok);init.headers=h;}}}catch(e){}return _f.call(this,input,init);};}
+  if(window.XMLHttpRequest){var _o=XMLHttpRequest.prototype.open;var _s=XMLHttpRequest.prototype.send;XMLHttpRequest.prototype.open=function(m,u){this.__lpM=m;this.__lpU=u;return _o.apply(this,arguments);};XMLHttpRequest.prototype.send=function(){try{if(needsToken(this.__lpU,this.__lpM)){var tok=getTok();if(tok)this.setRequestHeader('X-Landing-Page-Token',tok);}}catch(e){}return _s.apply(this,arguments);};}
+}catch(e){}})();
+</script>
+
+<script data-field-replace>
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var fields={};
+  var paramMap={
+    'first_name':'firstName','last_name':'lastName','full_name':'fullName',
+    'email':'email','phone':'phone','company':'company',
+    'city':'city','state':'state','country':'country'
+  };
+  var skipTags={'SCRIPT':1,'STYLE':1,'NOSCRIPT':1,'TEXTAREA':1,'CODE':1,'PRE':1};
+  var hasUrlFields=false;
+  for(var p in paramMap){
+    var v=params.get(p);
+    if(v){fields[paramMap[p]]=v;hasUrlFields=true;}
+  }
+  var contactId=params.get('contact_id');
+  function esc(s){
+    if(!s)return s;
+    var d=document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+  function doReplace(data){
+    var r={};
+    r['{{full_name}}']=esc(((data.firstName||'')+' '+(data.lastName||'')).trim()||((data.fullName||data.name)||''));
+    r['{{first_name}}']=esc(data.firstName||(data.name?data.name.split(' ')[0]:'')||'');
+    r['{{last_name}}']=esc(data.lastName||(data.name&&data.name.indexOf(' ')>-1?data.name.substring(data.name.indexOf(' ')+1):'')||'');
+    r['{{email}}']=esc(data.email||'');
+    r['{{phone}}']=esc(data.phone||'');
+    r['{{company}}']=esc(data.company||'');
+    r['{{city}}']=esc(data.city||'');
+    r['{{state}}']=esc(data.state||'');
+    r['{{country}}']=esc(data.country||'');
+    r['{{date}}']=new Date().toLocaleDateString();
+    r['{{time}}']=new Date().toLocaleTimeString();
+    r['{{location}}']=[data.city,data.state,data.country].filter(Boolean).join(', ');
+    r['{{tracking_id}}']=esc(data.trackingId||'');
+    r['{{lastClickedProduct}}']=esc(data.lastClickedProduct||'');
+    r['{{lastProductClickDate}}']=esc(data.lastProductClickDate||'');
+    r['{{lastClickedProductPrice}}']=esc(data.lastClickedProductPrice||'');
+    r['{{lastClickedProductURL}}']=esc(data.lastClickedProductURL||'');
+    r['{{productsClickedCount}}']=esc(data.productsClickedCount||'0');
+    r['{{ip_address}}']=esc(data.ipAddress||'');
+    r['{{ip}}']=esc(data.ipAddress||'');
+    if(data.customFields){
+      for(var k in data.customFields){
+        r['{{'+k+'}}']=esc(String(data.customFields[k]||''));
+      }
+    }
+    params.forEach(function(v,k){
+      if(!paramMap[k]&&k!=='contact_id'&&k!=='page_id'&&k.indexOf('utm_')!==0){
+        r['{{'+k+'}}']=esc(v);
+      }
+    });
+    var hasValues=false;
+    for(var key in r){if(r[key]){hasValues=true;break;}}
+    if(!hasValues)return;
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:function(n){
+        var p=n.parentNode;
+        if(p&&skipTags[p.nodeName])return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var node;
+    while(node=walker.nextNode()){
+      var txt=node.nodeValue;
+      if(txt&&txt.indexOf('{{')>-1){
+        var changed=txt;
+        for(var ph in r){
+          if(r[ph]&&changed.indexOf(ph)>-1){
+            changed=changed.split(ph).join(r[ph]);
+          }
+        }
+        if(changed!==txt)node.nodeValue=changed;
+      }
+    }
+    var attrs=['value','placeholder','content','alt','title'];
+    attrs.forEach(function(attr){
+      var els=document.querySelectorAll('['+attr+'*="{{"]');
+      for(var i=0;i<els.length;i++){
+        var tag=els[i].tagName;
+        if(skipTags[tag])continue;
+        var val=els[i].getAttribute(attr);
+        if(val){
+          var nv=val;
+          for(var ph in r){
+            if(r[ph]&&nv.indexOf(ph)>-1){
+              nv=nv.split(ph).join(r[ph]);
+            }
+          }
+          if(nv!==val)els[i].setAttribute(attr,nv);
+        }
+      }
+    });
+  }
+  function run(){
+    if(contactId){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET','https://paymegpt.com/api/landing/context/'+encodeURIComponent(contactId)+'?page_id=5693');
+      xhr.onload=function(){
+        if(xhr.status===200){
+          try{
+            var resp=JSON.parse(xhr.responseText);
+            if(resp.success&&resp.contact){
+              var merged=resp.contact;
+              for(var k in fields){merged[k]=fields[k];}
+              doReplace(merged);
+              return;
+            }
+          }catch(e){}
+        }
+        if(hasUrlFields)doReplace(fields);
+      };
+      xhr.onerror=function(){if(hasUrlFields)doReplace(fields);};
+      xhr.send();
+    }else if(hasUrlFields){
+      doReplace(fields);
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);}
+  else{run();}
+})();
+</script>
+<script data-payment>
+(function(){
+  var slug='UyLTn8W';
+  var apiBase='https://paymegpt.com';
+  var successSubtext='';var successBtnLabel='Continue';var successBtnColor='#16a34a';var successRedirect='';
+  function findEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  function findPhone(){var ids=['phone','phoneNumber','phone-number','tel','telephone','mobile','mobileNumber','cell','contact-phone','buyer-phone'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.trim())return el.value.trim();}var inputs=document.querySelectorAll('input[type="tel"],input[name*="phone"],input[name*="tel"],input[name*="mobile"],input[placeholder*="phone"],input[placeholder*="Phone"]');for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.trim())return inputs[j].value.trim();}return '';}
+  var __realProcessPayment=function(a,b,c,d,e){
+    var amountCents,email,productName,productDescription,customerName,quantity;
+    if(a&&typeof a==='object'){
+      amountCents=a.amountCents;email=a.email;productName=a.productName;
+      productDescription=a.productDescription||'';customerName=a.name||'';quantity=a.quantity||1;
+    }else{
+      amountCents=typeof a==='number'?a:0;productName=typeof b==='string'?b:'';
+      productDescription=typeof c==='string'?c:'';email='';customerName='';quantity=1;
+    }
+    if(!email)email=findEmail();
+    if(!customerName)customerName=findName();
+    var phone=findPhone();
+    if(!productName){alert('Product name is required.');return Promise.reject('no_product_name');}
+    if(!amountCents||amountCents<100){alert('Amount must be at least $1.00');return Promise.reject('invalid_amount');}
+    if(!email){alert('Please enter your email address.');return Promise.reject('no_email');}
+    var successBase=window.location.href.split('?')[0];
+    var __pLoc=(document.documentElement.lang||navigator.language||'en');
+    return fetch(apiBase+'/api/landing-pages/public/'+slug+'/payment/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,name:customerName,phone:phone||'',amountCents:amountCents,productName:productName,productDescription:productDescription,quantity:quantity,locale:__pLoc,successUrl:successBase+'?payment=success&product='+encodeURIComponent(productName)+'&session_id={CHECKOUT_SESSION_ID}',cancelUrl:successBase+'?payment=cancelled'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process payment');throw new Error(d.error);}
+    });
+  };
+  Object.defineProperty(window,'__processPayment',{value:__realProcessPayment,writable:false,configurable:false});
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('payment')==='success'){
+      var sidP=urlParams.get('session_id');
+      if(sidP){try{fetch(apiBase+'/api/landing-pages/public/'+slug+'/checkout/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sidP})}).catch(function(){});}catch(e){}}
+      var pName=urlParams.get('product')||'your item';
+      var overlay=document.createElement('div');overlay.id='payment-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+      var subTxt=successSubtext||('Thank you for purchasing '+pName+'.');
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Payment Successful!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">'+esc(subTxt)+'</p><button id="lp-pay-success-btn" style="padding:12px 32px;font-size:16px;font-weight:600;background:'+successBtnColor+';color:white;border:none;border-radius:8px;cursor:pointer;">'+esc(successBtnLabel)+'</button></div>';
+      document.body.appendChild(overlay);
+      var pBtn=document.getElementById('lp-pay-success-btn');
+      if(pBtn){pBtn.addEventListener('click',function(){if(successRedirect){window.location.href=successRedirect;}else{overlay.remove();window.history.replaceState({},'',window.location.pathname);}});}
+    }
+  });
+})();
+</script>
+<script data-cart>
+(function(){
+  var slug='UyLTn8W';
+  var apiBase='https://paymegpt.com';
+  var successSubtext='';var successBtnLabel='Continue';var successBtnColor='#16a34a';var successRedirect='';
+  function findCartEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findCartName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  function findCartPhone(){var ids=['phone','phoneNumber','phone-number','tel','telephone','mobile','mobileNumber','cell','contact-phone','buyer-phone'];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.trim())return el.value.trim();}var inputs=document.querySelectorAll('input[type="tel"],input[name*="phone"],input[name*="tel"],input[name*="mobile"],input[placeholder*="phone"],input[placeholder*="Phone"]');for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.trim())return inputs[j].value.trim();}return '';}
+  var __realCart=function(arg){
+    var items, email='', customerName='', successUrl, cancelUrl, currency;
+    if(Array.isArray(arg)){items=arg;}
+    else if(arg&&typeof arg==='object'){
+      items=arg.items;email=arg.email||'';customerName=arg.name||arg.customerName||'';
+      successUrl=arg.successUrl;cancelUrl=arg.cancelUrl;currency=arg.currency;
+    }
+    if(!Array.isArray(items)||items.length===0){alert('No items in cart.');return Promise.reject('no_items');}
+    var cleanItems=[];var totalCents=0;
+    for(var i=0;i<items.length;i++){
+      var it=items[i];if(!it||typeof it!=='object'){alert('Invalid item at position '+i);return Promise.reject('bad_item');}
+      var nm=typeof it.name==='string'?it.name.trim():'';
+      if(!nm){alert('Item '+(i+1)+' is missing a name.');return Promise.reject('no_name');}
+      var amt=typeof it.amountCents==='number'?it.amountCents:(typeof it.amount==='number'?Math.round(it.amount*100):NaN);
+      if(!isFinite(amt)||amt<1){alert('Item "'+nm+'" needs a valid amount in cents.');return Promise.reject('bad_amount');}
+      var qty=(typeof it.quantity==='number'&&it.quantity>0)?Math.floor(it.quantity):1;
+      cleanItems.push({name:nm,description:it.description||'',amountCents:amt,quantity:qty});
+      totalCents+=amt*qty;
+    }
+    if(totalCents<50){alert('Cart total must be at least $0.50');return Promise.reject('total_too_low');}
+    if(!email)email=findCartEmail();
+    if(!customerName)customerName=findCartName();
+    var cartPhone=findCartPhone();
+    if(!email){var p=window.prompt('Enter your email for the receipt:','');if(p&&p.indexOf('@')>-1){email=p.trim();}else{alert('An email address is required to complete checkout.');return Promise.reject('no_email');}}
+    var successBase=window.location.href.split('?')[0];
+    var body={email:email,name:customerName,items:cleanItems,locale:(document.documentElement.lang||navigator.language||'en')};
+    if(currency)body.currency=currency;
+    if(cartPhone)body.phone=cartPhone;
+    body.successUrl=successUrl||(successBase+'?cart=success&email='+encodeURIComponent(email)+'&session_id={CHECKOUT_SESSION_ID}');
+    body.cancelUrl=cancelUrl||(successBase+'?cart=cancelled');
+    return fetch(apiBase+'/api/landing-pages/public/'+slug+'/cart/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process checkout');throw new Error(d.error);}
+    });
+  };
+  try{Object.defineProperty(window,'__processCart',{value:__realCart,writable:false,configurable:false});}catch(e){window.__processCart=__realCart;}
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('cart')==='success'){
+      var sidC=urlParams.get('session_id');
+      if(sidC){try{fetch(apiBase+'/api/landing-pages/public/'+slug+'/checkout/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:sidC})}).catch(function(){});}catch(e){}}
+      if(document.getElementById('payment-success-overlay')||document.getElementById('donation-success-overlay')||document.getElementById('cart-success-overlay'))return;
+      var overlay=document.createElement('div');overlay.id='cart-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+      var subTxt=successSubtext||'Thank you for your order.';
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Order Confirmed!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">'+esc(subTxt)+'</p><button id="lp-cart-success-btn" style="padding:12px 32px;font-size:16px;font-weight:600;background:'+successBtnColor+';color:white;border:none;border-radius:8px;cursor:pointer;">'+esc(successBtnLabel)+'</button></div>';
+      document.body.appendChild(overlay);
+      var cBtn=document.getElementById('lp-cart-success-btn');
+      if(cBtn){cBtn.addEventListener('click',function(){if(successRedirect){window.location.href=successRedirect;}else{overlay.remove();window.history.replaceState({},'',window.location.pathname);}});}
+    }
+  });
+})();
+</script>  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="antialiased">
+
+<!-- Background particle field + foreground confetti layers -->
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+<div class="spotlight spot-left"></div>
+<div class="spotlight spot-right"></div>
+
+<!-- ============================================================================ -->
+<!-- SECTION: SPLASH — cinematic title screen with Start Game CTA                  -->
+<!-- ============================================================================ -->
+<section id="splash-screen" data-section="splash" class="screen flex flex-col items-center justify-center min-h-screen px-4 py-12 text-center">
+  <p class="tracking-[.4em] text-sky-300/80 text-[10px] md:text-sm mb-5 uppercase">AI Platform Presents</p>
+
+  <h1 class="title-3d leading-none text-[clamp(3.4rem,16vw,11.5rem)]" style="background:linear-gradient(120deg,#ffffff 0%,#9fd8ff 25%,#2b7fff 50%,#d6ecff 75%,#ffffff 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900;letter-spacing:.03em;filter:drop-shadow(0 4px 0 rgba(3,22,61,.95)) drop-shadow(0 16px 34px rgba(70,150,255,.5));">Krowd AI Challenge</h1>
+  <div class="font-display tracking-[.4em] text-sky-200 text-[clamp(1.5rem,6vw,3.4rem)] mt-1" style="text-shadow:0 0 26px rgba(90,160,255,.65)">TRIVIA</div>
+
+  <p class="mt-7 max-w-xl text-sm md:text-base text-slate-300 leading-relaxed px-2">
+    Thirty clues across six categories stand between you and Grand Master status.
+  </p>
+
+  <button id="start-btn" class="btn-brand font-display tracking-[.2em] rounded-xl px-10 md:px-14 py-4 mt-10 text-2xl md:text-3xl">
+    START GAME
+  </button>
+  
+
+  <div class="mt-9 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[10px] md:text-[11px] uppercase tracking-[.25em] text-slate-400">
+    <span>Single Player</span><span>6 Categories</span><span>30 Clues</span><span>2 Daily Doubles</span><span>15s Per Clue</span>
+  </div>
+</section>
+
+<!-- ============================================================================ -->
+<!-- SECTION: GAME BOARD — score HUD + 3D tilting Jeopardy grid                    -->
+<!-- Desktop: classic 6-column grid. Mobile: stacked category cards.               -->
+<!-- ============================================================================ -->
+<section id="board-screen" data-section="game-board" class="screen hidden min-h-screen pb-20">
+
+  <!-- HUD: title, score, streak, clues left, sound + restart -->
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 px-4 md:px-8 pt-5">
+    <div class="flex items-center gap-3">
+      <span class="font-display font-bold text-3xl md:text-5xl tracking-[.1em] text-blue-400" style="-webkit-text-stroke:1px rgba(191,219,254,.85); text-shadow:0 3px 0 rgba(0,0,0,.95), 0 0 22px rgba(59,130,246,.85), 0 0 60px rgba(59,130,246,.45)">KROWD <span class="text-white" style="-webkit-text-stroke:1px rgba(255,255,255,.85); text-shadow:0 3px 0 rgba(0,0,0,.95), 0 0 22px rgba(255,255,255,.35)">AI CHALLENGE</span></span>
+    </div>
+    <div class="flex items-center flex-wrap gap-2 md:gap-3">
+      <div class="hud-chip rounded-lg px-3 md:px-4 py-1.5 text-center">
+        <div class="text-[9px] tracking-[.2em] text-slate-400 uppercase">Score</div>
+        <div id="hud-score" class="font-display text-lg md:text-2xl text-amber-300 leading-none">$0</div>
+      </div>
+      <div class="hud-chip rounded-lg px-3 md:px-4 py-1.5 text-center">
+        <div class="text-[9px] tracking-[.2em] text-slate-400 uppercase">Streak</div>
+        <div id="hud-streak" class="font-display text-lg md:text-2xl text-sky-300 leading-none">×0</div>
+      </div>
+      <div class="hud-chip rounded-lg px-3 md:px-4 py-1.5 text-center">
+        <div class="text-[9px] tracking-[.2em] text-slate-400 uppercase">Clues</div>
+        <div id="hud-left" class="font-display text-lg md:text-2xl text-slate-200 leading-none">30</div>
+      </div>
+      <button id="mute-btn" class="icon-btn rounded-lg w-10 h-10 flex items-center justify-center" aria-label="Toggle sound">
+        <svg id="icon-sound-on" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H3v6h3l5 4V5z"/></svg>
+        <svg id="icon-sound-off" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H3v6h3l5 4V5zM22 9l-6 6M16 9l6 6"/></svg>
+      </button>
+      <button id="restart-btn" class="icon-btn rounded-lg w-10 h-10 flex items-center justify-center" aria-label="Restart game">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v6h6M20 20v-6h-6M20 9a8 8 0 00-14.9-3M4 15a8 8 0 0014.9 3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 3D board wrapper (mouse parallax tilts --rx / --ry) -->
+  <div class="board-perspective px-3 md:px-8 mt-6 md:mt-8 max-w-7xl mx-auto">
+    <div id="board-3d">
+      <!-- Desktop classic grid (rendered by JS) -->
+      <div id="board-desktop" class="hidden md:grid grid-cols-6 gap-2 lg:gap-3"></div>
+      <!-- Mobile stacked categories (rendered by JS) -->
+      <div id="board-mobile" class="md:hidden space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Champion podium — SINGLE PLAYER: your live score with a gold signal light -->
+  
+  <div class="max-w-7xl mx-auto px-3 md:px-8 mt-10 md:mt-14">
+    <div class="text-center mb-4">
+      <span class="text-[10px] md:text-xs tracking-[.35em] text-slate-400 uppercase">Tonight's Champion</span>
+    </div>
+    <div class="max-w-xs md:max-w-sm mx-auto">
+
+      <!-- Solo podium — YOU -->
+      <div id="contestant-1" class="podium podium-you stat-card relative rounded-xl px-6 md:px-10 pt-5 pb-6 text-center">
+        <div class="signal-light w-full mb-4"></div>
+        <div class="w-14 h-14 md:w-20 md:h-20 mx-auto rounded-full flex items-center justify-center font-display text-2xl md:text-4xl" style="background:linear-gradient(180deg,#ffe9a3,#f5b301); border:1px solid rgba(255,240,190,.8); color:#231a00; box-shadow:0 6px 0 #8a6400, 0 12px 26px rgba(255,190,40,.35);">YOU</div>
+        <div class="mt-3 text-xs md:text-base tracking-[.2em] text-amber-300 uppercase font-semibold">You</div>
+        <div class="text-[9px] md:text-xs tracking-[.18em] text-amber-200/70 uppercase">Returning Champion</div>
+        <div id="contestant-score-1" class="font-display text-3xl md:text-5xl mt-2 text-amber-300" style="text-shadow:0 0 16px rgba(255,190,40,.5)">$0</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!--
+    NOTE ON CONTENT EXPANSION: The 50 categories / 1000 Q&A live in the game's
+    JavaScript question-bank file (not in this board markup — tiles are rendered
+    by JS from that data). External URLs cannot be fetched from here, so the
+    document at app.macknified.com could not be read. To expand the bank, grow
+    that data array to 50 category objects × 20 clues each (1000 total); the
+    board renders whatever the bank contains, and the shuffle below will
+    randomize which categories appear each game.
+
+    RESTART = RESHUFFLE: capture-phase listener on #restart-btn shuffles the
+    question bank BEFORE the game's own restart handler rebuilds the board,
+    so every refresh deals categories in a new random order.
+  -->
+  
+
+  <!--
+    SECOND DAILY DOUBLE
+    The base engine deals ONE Daily Double per board using its own internal
+    logic (which lives outside this file). This script upgrades every fresh
+    board to TWO Daily Doubles with two independent passes:
+      1) DATA PASS — before the board is dealt: if the engine flags Daily
+         Doubles directly on clue objects in the question bank (dailyDouble,
+         dd, etc.), one more clue in a DIFFERENT category gets the same flag.
+      2) DOM PASS — after the board renders: if the engine marks the Daily
+         Double tile with a class or data-* attribute, the identical marker is
+         stamped onto one more random tile — so a second Daily Double is live
+         whichever way the engine checks for it.
+  -->
+  
+
+  <!--
+    SINGLE-PLAYER FLOW
+    • No AI opponents, no buzz-in races, no steals — you play every clue
+      directly. The buzz-in button is removed (only Continue is needed)
+      and the answer options are never locked.
+    • Your champion podium below mirrors the HUD score live.
+    • NO AUTO-START: the round never opens a clue for you — you pick the
+      first clue (and every clue after) yourself, at your own pace.
+    • Two Daily Doubles per board are dealt by the script above.
+  -->
+  
+
+  <!--
+    GAME-OVER BRANDING
+    The results screen (rendered outside this board section) still titled
+    the winner "PayMeGPT". This watcher renames every occurrence to
+    "Macknified AI Grand Master" the moment it appears, and after every
+    re-render of the results screen. (The replacement text doesn't contain
+    the needle, so the observer can never loop.)
+  -->
+  
+</section>
+
+<!-- ============================================================================ -->
+<!-- SECTION: CLUE MODAL — full-screen clue reveal, timer, multiple choice         -->
+<!-- ============================================================================ -->
+<div id="clue-modal" data-section="clue-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-3 md:p-6" style="background:rgba(2,2,16,.85); backdrop-filter:blur(10px);">
+
+  <!-- NOTE: The 50-category / 1000-clue question bank and the refresh-button
+       category shuffle are handled in the game-data / game-logic (JS) section —
+       they cannot live in this modal markup. This modal only renders one clue at
+       a time via #clue-cat, #clue-val, #clue-text, #opt-grid, and #dd-splash,
+       all populated dynamically by the shuffled data source.
+       SINGLE-PLAYER BUILD (updated): no AI contestants and NO BUZZER — the buzz-in
+       stage has been removed; the player answers directly and only the CONTINUE
+       button is needed. The game-logic JS must NOT auto-open/auto-start the first
+       clue — a clue opens only when the player clicks a board tile. The board hides
+       TWO Daily Doubles each game (see data-daily-doubles="2" on #dd-splash below).
+       END-OF-GAME TITLE: the results screen (game-logic JS) must crown the player
+       "MACKNIFIED AI GRAND MASTER" — never "PayMeGPT". -->
+  <!-- Macknified AI Trivia — brand palette overrides (Blue / Black / White) -->
+  
+
+  <!-- Daily Double splash overlay — game-logic JS reads data-daily-doubles="2"
+       and hides TWO of these on the board each game (previously one) -->
+  <div id="dd-splash" data-daily-doubles="2" class="hidden absolute inset-0 flex-col items-center justify-center text-center px-4">
+    <div class="dd-zoom dd-pulse font-display text-red-500 leading-none text-[clamp(3rem,14vw,9rem)]" style="text-shadow:0 0 40px rgba(255,45,45,.8)">DAILY<br>DOUBLE</div>
+    <p class="mt-6 text-slate-300 text-sm md:text-lg tracking-wide">One of <span class="text-red-400 font-bold">two</span> Daily Doubles on the board — this clue is worth <span class="text-red-400 font-bold">double</span> its value. Win it or lose it.</p>
+  </div>
+
+  <!-- Clue card -->
+  <div id="clue-card" class="clue-shell sheen hidden w-full max-w-3xl rounded-2xl p-5 md:p-10 max-h-[92vh] overflow-y-auto">
+    <!-- Brand header -->
+    <div class="text-center mb-5">
+      <span class="font-display text-2xl md:text-3xl tracking-[.3em] text-white">MACKNIFIED <span class="text-sky-400">AI</span> TRIVIA</span>
+      <div class="mx-auto mt-2 h-px w-48 bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
+    </div>
+
+    <!-- Timer -->
+    <div class="flex items-center gap-3 mb-5">
+      <div class="flex-1 h-2.5 rounded-full bg-slate-800/80 overflow-hidden">
+        <div id="timer-bar" class="h-full rounded-full" style="width:100%"></div>
+      </div>
+      <span id="timer-num" class="font-display text-xl text-sky-300 w-8 text-right">15</span>
+    </div>
+
+    <!-- Category + value -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+      <span id="clue-cat" class="text-[10px] md:text-xs uppercase tracking-[.3em] text-sky-300"></span>
+      <span id="clue-val" class="font-display text-2xl md:text-3xl text-white" style="text-shadow:0 0 18px rgba(77,166,255,.65)"></span>
+    </div>
+
+    <!-- Clue text -->
+    <p id="clue-text" class="text-lg md:text-3xl font-semibold leading-snug text-slate-100 mb-7"></p>
+
+    <!-- Buzzer REMOVED: the player answers directly — no buzz-in step, only the
+         CONTINUE button. The clue modal opens ONLY when the player clicks a board
+         tile (the game-logic JS must NOT auto-open the first clue on game start).
+         A CORRECT answer adds the clue's value; a WRONG answer deducts it and
+         reveals the correct answer; then CONTINUE moves on. Board control always
+         stays with the player — they pick every category/value. -->
+
+    <!-- Answer options — immediately tappable when the clue renders (no lock) -->
+    <div id="opt-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+    <!-- Feedback + correct answer + continue -->
+    <div id="feedback" class="hidden mt-6 text-center">
+      <div id="feedback-text" class="feed-pop font-display text-3xl md:text-5xl tracking-wide"></div>
+      <p id="feedback-answer" class="mt-3 text-sm md:text-base text-slate-300"></p>
+      <button id="continue-btn" class="btn-brand font-display tracking-[.2em] rounded-xl px-10 py-3 mt-6 text-xl md:text-2xl">CONTINUE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================================ -->
+<!-- SECTION: RESULTS — final rank, score breakdown, play again                    -->
+<!-- ============================================================================ -->
+<section id="results-screen" data-section="results" class="screen hidden flex-col items-center justify-center min-h-screen px-4 py-14 text-center">
+  <p class="font-display tracking-[.3em] text-white text-2xl md:text-3xl uppercase" style="text-shadow:0 0 22px rgba(90,160,255,.6)">Macknified <span class="text-sky-400">AI</span> Trivia</p>
+  <p class="tracking-[.4em] text-sky-300/80 text-[10px] md:text-sm uppercase mt-2 mb-4">Single Player &bull; Final Results</p>
+  <h2 id="rank-title" class="title-3d leading-none text-[clamp(2.4rem,10vw,6.5rem)]">MACKNIFIED AI GRAND MASTER</h2>
+  
+  <div id="final-score" class="font-display text-4xl md:text-6xl mt-3 text-sky-200" style="text-shadow:0 0 26px rgba(90,160,255,.55)"></div>
+  <p id="rank-blurb" class="mt-5 max-w-xl text-sm md:text-base text-slate-300 leading-relaxed px-2"></p>
+  <p class="mt-3 text-[10px] tracking-[.25em] uppercase text-slate-500">Solo run &mdash; no AI contestants &bull; Two Daily Doubles hidden on the board</p>
+
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mt-10 w-full max-w-3xl">
+    <div class="stat-card rounded-xl px-4 py-5">
+      <div id="stat-correct" class="font-display text-3xl md:text-4xl text-emerald-400">0</div>
+      <div class="text-[10px] tracking-[.2em] text-slate-400 uppercase mt-1">Correct</div>
+    </div>
+    <div class="stat-card rounded-xl px-4 py-5">
+      <div id="stat-wrong" class="font-display text-3xl md:text-4xl text-red-400">0</div>
+      <div class="text-[10px] tracking-[.2em] text-slate-400 uppercase mt-1">Missed</div>
+    </div>
+    <div class="stat-card rounded-xl px-4 py-5">
+      <div id="stat-streak" class="font-display text-3xl md:text-4xl text-amber-300">×0</div>
+      <div class="text-[10px] tracking-[.2em] text-slate-400 uppercase mt-1">Best Streak</div>
+    </div>
+    <div class="stat-card rounded-xl px-4 py-5">
+      <div id="stat-acc" class="font-display text-3xl md:text-4xl text-sky-300">0%</div>
+      <div class="text-[10px] tracking-[.2em] text-slate-400 uppercase mt-1">Accuracy</div>
+    </div>
+    <div class="stat-card rounded-xl px-4 py-5 col-span-2 md:col-span-1">
+      <div id="stat-dd" class="font-display text-3xl md:text-4xl text-yellow-300">0/2</div>
+      <div class="text-[10px] tracking-[.2em] text-slate-400 uppercase mt-1">Daily Doubles</div>
+    </div>
+  </div>
+
+  <button id="again-btn" class="btn-gold font-display tracking-[.2em] rounded-xl px-12 py-4 mt-12 text-2xl md:text-3xl">PLAY AGAIN</button>
+</section>
+
+
+
+<canvas id="fx-canvas"></canvas>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
