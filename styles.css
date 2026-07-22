@@ -1,0 +1,316 @@
+/* ==========================================================================
+   GLOBAL / STAGE ATMOSPHERE
+   Deep-space stage, cinematic vignette, and animated spotlight beams.
+   ========================================================================== */
+:root{
+  --rx: 5deg;   /* board tilt X (updated by mouse parallax) */
+  --ry: 0deg;   /* board tilt Y (updated by mouse parallax) */
+}
+html,body{ height:100%; }
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #101a4a 0%, transparent 60%),
+    radial-gradient(900px 600px at 85% 110%, #1a0f3a 0%, transparent 55%),
+    #04041a;
+  color:#e6ecff;
+  overflow-x:hidden;
+}
+.font-display{ font-family:'Bebas Neue',sans-serif; }
+
+/* Canvases: background particles + foreground confetti */
+#bg-canvas{ position:fixed; inset:0; z-index:0; }
+#fx-canvas{ position:fixed; inset:0; z-index:50; pointer-events:none; }
+
+/* Cinematic vignette on top of everything visual (non-interactive) */
+.vignette{
+  position:fixed; inset:0; z-index:2; pointer-events:none;
+  background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,12,.6) 100%);
+}
+
+/* Rotating stage spotlights */
+.spotlight{
+  position:fixed; top:-25vh; width:42vw; height:130vh; z-index:1;
+  pointer-events:none; filter:blur(46px); opacity:.15; transform-origin:top center;
+}
+.spot-left{ left:-6vw; background:linear-gradient(180deg,#4da6ff,transparent 70%); transform:rotate(18deg); animation:swayL 9s ease-in-out infinite; }
+.spot-right{ right:-6vw; background:linear-gradient(180deg,#ffd75e,transparent 70%); transform:rotate(-18deg); animation:swayR 11s ease-in-out infinite; }
+@keyframes swayL{ 50%{ transform:rotate(9deg);} }
+@keyframes swayR{ 50%{ transform:rotate(-9deg);} }
+
+/* ==========================================================================
+   3D GOLD TITLE
+   Layered gradient clipped to text + drop-shadow extrusion + shimmer sweep.
+   ========================================================================== */
+.title-3d{
+  font-family:'Bebas Neue',sans-serif;
+  background:linear-gradient(120deg,#fff6cf 0%,#ffd75e 25%,#f5b301 50%,#ffe9a3 75%,#fff6cf 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:shimmer 6s linear infinite, floaty 5s ease-in-out infinite;
+  filter:drop-shadow(0 3px 0 rgba(122,84,0,.9)) drop-shadow(0 12px 26px rgba(255,190,40,.30));
+}
+@keyframes shimmer{ to{ background-position:200% center; } }
+@keyframes floaty{ 50%{ transform:translateY(-8px);} }
+
+/* ==========================================================================
+   SCREEN TRANSITIONS
+   ========================================================================== */
+.screen{ position:relative; z-index:10; }
+@keyframes screenIn{ from{ opacity:0; transform:scale(.965);} to{ opacity:1; transform:none;} }
+.screen-enter{ animation:screenIn .5s ease both; }
+
+/* ==========================================================================
+   GAME BOARD — 3D perspective wrapper + tiles
+   ========================================================================== */
+.board-perspective{ perspective:1400px; }
+#board-3d{
+  transform:rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style:preserve-3d;
+  transition:transform .18s ease-out;
+}
+.cat-header{
+  background:linear-gradient(180deg,#1b2f6b,#0d1838);
+  border:1px solid rgba(110,150,255,.30);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.45);
+}
+.tile{
+  position:relative;
+  background:linear-gradient(160deg,#16265e 0%,#0c1538 100%);
+  border:1px solid rgba(120,160,255,.25);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px rgba(0,0,0,.5);
+  transform-style:preserve-3d;
+  transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  cursor:pointer;
+}
+.tile:hover:not(.answered){
+  transform:translateZ(26px) scale(1.03);
+  border-color:rgba(255,215,0,.65);
+  box-shadow:0 0 0 1px rgba(255,215,0,.45), 0 22px 50px rgba(0,0,0,.65), 0 0 44px rgba(80,140,255,.30);
+}
+.tile .val{
+  font-family:'Bebas Neue',sans-serif;
+  color:#ffd75e;
+  text-shadow:0 2px 10px rgba(255,180,0,.40);
+}
+.tile.answered{
+  pointer-events:none;
+  background:linear-gradient(160deg,#0a0f24,#070b1c);
+  border-color:rgba(90,110,180,.15);
+  box-shadow:inset 0 2px 12px rgba(0,0,0,.6);
+}
+@keyframes tileIn{
+  from{ opacity:0; transform:translateY(26px) rotateX(38deg);}
+  to{ opacity:1; transform:none;}
+}
+.tile-enter{ animation:tileIn .55s cubic-bezier(.2,.8,.2,1) both; }
+
+/* ==========================================================================
+   CLUE MODAL — 3D flip-in card, options, feedback, timer
+   ========================================================================== */
+.clue-shell{
+  background:linear-gradient(165deg,#101d4d 0%,#0a1230 55%,#070b20 100%);
+  border:1px solid rgba(140,175,255,.35);
+  box-shadow:0 0 0 1px rgba(255,215,0,.18), 0 40px 90px rgba(0,0,0,.7), 0 0 70px rgba(70,120,255,.18);
+}
+@keyframes cardIn{
+  0%{ opacity:0; transform:perspective(1200px) rotateY(-72deg) scale(.8);}
+  100%{ opacity:1; transform:perspective(1200px) rotateY(0) scale(1);}
+}
+.card-in{ animation:cardIn .6s cubic-bezier(.2,.9,.25,1.15) both; }
+
+.opt-btn{
+  background:linear-gradient(180deg,#182a63,#0d1838);
+  border:1px solid rgba(120,160,255,.28);
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .2s ease;
+}
+.opt-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  border-color:rgba(255,215,0,.6);
+  box-shadow:0 10px 26px rgba(0,0,0,.5), 0 0 26px rgba(90,150,255,.25);
+}
+.opt-btn:disabled{ cursor:default; }
+.opt-correct{
+  background:linear-gradient(180deg,#0f7a44,#0a4d2a) !important;
+  border-color:#3ddc84 !important;
+  box-shadow:0 0 30px rgba(61,220,132,.45) !important;
+}
+.opt-wrong{
+  background:linear-gradient(180deg,#8a1d1d,#4d0d0d) !important;
+  border-color:#ff6b6b !important;
+  box-shadow:0 0 30px rgba(255,80,80,.40) !important;
+}
+.opt-letter{
+  background:rgba(255,215,0,.12);
+  border:1px solid rgba(255,215,0,.45);
+  color:#ffd75e;
+}
+
+#timer-bar{ transition:width .1s linear; background:linear-gradient(90deg,#ffd75e,#ff9d00); }
+#timer-bar.danger{ background:linear-gradient(90deg,#ff6b6b,#ff2020); }
+
+@keyframes feedPop{
+  0%{ opacity:0; transform:scale(.5);} 60%{ opacity:1; transform:scale(1.12);} 100%{ transform:scale(1);}
+}
+.feed-pop{ animation:feedPop .45s cubic-bezier(.2,.9,.3,1.3) both; }
+
+/* Daily Double splash */
+@keyframes ddZoom{
+  0%{ opacity:0; transform:scale(.15) rotate(-6deg);}
+  55%{ opacity:1; transform:scale(1.15) rotate(2deg);}
+  100%{ transform:scale(1) rotate(0);}
+}
+.dd-zoom{ animation:ddZoom .9s cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes ddGlow{ 50%{ filter:drop-shadow(0 0 34px rgba(255,60,60,.9));} }
+.dd-pulse{ animation:ddGlow 1s ease-in-out infinite; }
+
+/* ==========================================================================
+   GOLD 3D BUTTONS + HUD
+   ========================================================================== */
+.btn-gold{
+  background:linear-gradient(180deg,#ffe9a3,#f5b301);
+  color:#231a00;
+  box-shadow:0 6px 0 #8a6400, 0 14px 34px rgba(255,190,40,.35);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn-gold:hover{ transform:translateY(-2px); box-shadow:0 8px 0 #8a6400, 0 18px 44px rgba(255,190,40,.5); }
+.btn-gold:active{ transform:translateY(3px); box-shadow:0 2px 0 #8a6400; }
+
+.hud-chip{
+  background:linear-gradient(180deg,rgba(27,47,107,.85),rgba(13,24,56,.85));
+  border:1px solid rgba(120,160,255,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 6px 18px rgba(0,0,0,.4);
+}
+.icon-btn{
+  background:linear-gradient(180deg,#182a63,#0d1838);
+  border:1px solid rgba(120,160,255,.3);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.icon-btn:hover{ border-color:rgba(255,215,0,.6); box-shadow:0 0 18px rgba(90,150,255,.3); }
+
+/* Stat cards on results screen */
+.stat-card{
+  background:linear-gradient(180deg,#141f4d,#0b1230);
+  border:1px solid rgba(120,160,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(0,0,0,.45);
+}
+
+/* Subtle scanline shimmer over the clue card for a game-show sheen */
+.sheen{ position:relative; overflow:hidden; }
+.sheen::after{
+  content:""; position:absolute; inset:-60%;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 50%,transparent 58%);
+  animation:sheenMove 4.5s linear infinite; pointer-events:none;
+}
+@keyframes sheenMove{ from{ transform:translateX(-40%);} to{ transform:translateX(40%);} }
+
+.btn-brand{
+    background:linear-gradient(180deg,#5eb2ff,#0e4fd6);
+    color:#ffffff;
+    box-shadow:0 6px 0 #062659, 0 14px 34px rgba(70,150,255,.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-brand:hover{ transform:translateY(-2px); box-shadow:0 8px 0 #062659, 0 18px 44px rgba(70,150,255,.5); }
+  .btn-brand:active{ transform:translateY(3px); box-shadow:0 2px 0 #062659; }
+
+  /* Category headers: black background (not yellow) with gold lettering */
+  .cat-header, .category-header, .cat-title, .category-title{
+    background:linear-gradient(180deg,#101010 0%,#000000 100%) !important;
+    border:1px solid rgba(255,215,0,.45) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.65) !important;
+    animation:none !important;
+  }
+
+.podium{ transition:box-shadow .3s ease, border-color .3s ease, transform .3s ease; }
+    .podium-you{
+      border-color:rgba(255,215,0,.55);
+      box-shadow:0 0 0 1px rgba(255,215,0,.35), 0 20px 44px rgba(0,0,0,.6), 0 0 36px rgba(255,190,40,.22);
+    }
+    /* Solo champion — the signal light always glows gold */
+    .signal-light{
+      height:5px; border-radius:999px;
+      background:linear-gradient(90deg, rgba(255,215,0,.15), #ffd75e, rgba(255,215,0,.15));
+      box-shadow:0 0 16px rgba(255,200,40,.75);
+      animation:signalPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes signalPulse{ 50%{ opacity:.5; } }
+
+    /* Keep the board stationary — disable mouse-parallax tilt */
+    #board-3d{ transform:none !important; transition:none !important; }
+
+    /* Flatten tile hover so every square stays clickable (no 3D raise overlapping neighbors) */
+    #board-3d .tile{ transform-style:flat; }
+    #board-3d .tile:hover:not(.answered){
+      transform:none;
+      z-index:5;
+      border-color:rgba(255,215,0,.65);
+      box-shadow:0 0 0 1px rgba(255,215,0,.45), 0 12px 30px rgba(0,0,0,.55), 0 0 44px rgba(80,140,255,.30);
+    }
+
+    /* Daily Double splash glows red */
+    @keyframes ddGlowRed{ 50%{ filter:drop-shadow(0 0 34px rgba(255,60,60,.9)); } }
+    .dd-pulse{ animation:ddGlowRed 1s ease-in-out infinite !important; }
+
+    /* Category headers: classic Jeopardy BLUE panels with glowing gold lettering */
+    .cat-header, .category-header, .cat-title, .category-title{
+      background:linear-gradient(180deg,#1b2f6b 0%,#0d1838 100%) !important;
+      border:1px solid rgba(110,150,255,.5) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 0 26px rgba(80,140,255,.35), 0 8px 24px rgba(0,0,0,.65) !important;
+      animation:catHeaderGlow 3.2s ease-in-out infinite;
+    }
+    .cat-header, .cat-header *, .category-header, .category-header *, .cat-title, .cat-title *, .category-title, .category-title *{
+      color:#ffd75e !important;
+      text-shadow:0 0 14px rgba(255,200,40,.9), 0 2px 3px rgba(0,0,0,.85) !important;
+    }
+    @keyframes catHeaderGlow{
+      0%,100%{ filter:drop-shadow(0 0 4px rgba(140,170,255,.18)) brightness(1); }
+      50%{ filter:drop-shadow(0 0 14px rgba(140,170,255,.45)) brightness(1.22); }
+    }
+    /* Mobile stacked category titles glow gold too */
+    #board-mobile h2, #board-mobile h3{
+      color:#ffd75e !important;
+      text-shadow:0 0 12px rgba(255,200,40,.8), 0 2px 3px rgba(0,0,0,.8) !important;
+    }
+
+    /* Buzz-in removed (single-player — only Continue is needed): hide the
+       buzzer UI entirely and make sure the answer options never lock */
+    #buzz-btn, .buzz-dot{ display:none !important; }
+    #opt-grid.locked{ opacity:1 !important; pointer-events:auto !important; filter:none !important; }
+
+#timer-bar{ background:linear-gradient(90deg,#7cc4ff,#2563eb); }
+    #timer-bar.danger{ background:linear-gradient(90deg,#ff6b6b,#ff2020); }
+    .clue-shell{ box-shadow:0 0 0 1px rgba(77,166,255,.28), 0 40px 90px rgba(0,0,0,.7), 0 0 70px rgba(60,130,255,.22); }
+    .opt-letter{ background:rgba(77,166,255,.12); border:1px solid rgba(77,166,255,.45); color:#7cc4ff; }
+    @keyframes ddGlowRed{ 50%{ filter:drop-shadow(0 0 34px rgba(255,60,60,.9)); } }
+    .dd-pulse{ animation:ddGlowRed 1s ease-in-out infinite; }
+    /* Trivia card stays perfectly still — no flip-in, bounce, or sweeping shimmer motion */
+    #clue-card, #clue-card.card-in{ animation:none !important; }
+    #clue-card.sheen::after{ display:none; }
+    /* Daily Double splash is display-only so it never blocks clicks on the answer squares */
+    #dd-splash{ pointer-events:none !important; }
+    .btn-brand{
+      background:linear-gradient(180deg,#7cc4ff,#2563eb);
+      color:#fff;
+      box-shadow:0 6px 0 #0b2a6b, 0 14px 34px rgba(77,166,255,.35);
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-brand:hover{ transform:translateY(-2px); box-shadow:0 8px 0 #0b2a6b, 0 18px 44px rgba(77,166,255,.5); }
+    .btn-brand:active{ transform:translateY(3px); box-shadow:0 2px 0 #0b2a6b; }
+
+    /* Category headers switched BACK to classic Jeopardy blue (overrides the black theme) */
+    .cat-header, .category-header, .cat-title, .category-title{
+      background:linear-gradient(180deg,#1b2f6b,#0d1838) !important;
+      border:1px solid rgba(110,150,255,.35) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.45) !important;
+      animation:none !important;
+    }
+    .cat-header, .cat-header *, .category-header, .category-header *, .cat-title, .cat-title *, .category-title, .category-title *{
+      color:#e6ecff !important;
+      text-shadow:0 1px 3px rgba(0,0,0,.7) !important;
+    }
+    #board-mobile h2, #board-mobile h3{
+      color:#e6ecff !important;
+      text-shadow:0 1px 3px rgba(0,0,0,.7) !important;
+    }
+
+    /* Buzzer removed — single-player answers directly; only CONTINUE is needed */
